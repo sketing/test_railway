@@ -10,8 +10,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 
 # --- Streamlit setup ---
-st.set_page_config(page_title="Customer KPI Dashboard", layout="wide")
-st.title("📊 Customer KPI Dashboard")
+st.set_page_config(page_title="DEMOCustomer KPI Dashboard", layout="wide")
+st.title("📊 DEMO Customer KPI Dashboard")
 
 # --- Query data ---
 query = "SELECT * FROM customer_kpis"
