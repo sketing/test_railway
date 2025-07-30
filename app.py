@@ -1,47 +1,31 @@
-import streamlit as st
-import streamlit.web.cli as stcli
-import pandas as pd
-import psycopg2
 import os
-import sys
-from dotenv import load_dotenv
+import pandas as pd
+import streamlit as st
+from sqlalchemy import create_engine
 
-load_dotenv()
+# --- Database connection ---
+DB_URL = os.getenv("DB_URL")
+engine = create_engine(DB_URL)
 
-@st.cache_data(ttl=60)
-def load_data():
-    conn = psycopg2.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=5432,
-        sslmode="require"
-    )
-    query = "SELECT * FROM customer_kpis"
-    df = pd.read_sql(query, conn)
-    conn.close()
-    return df
-
+# --- Streamlit layout ---
+st.set_page_config(page_title="Customer KPI Dashboard", layout="wide")
 st.title("📊 Customer KPI Dashboard")
 
-df = load_data()
+# --- Query data ---
+query = "SELECT * FROM customer_kpis"
+df = pd.read_sql(query, engine)
 
-# Filters
-pay_periods = df["pay_period"].dropna().unique()
-selected_period = st.selectbox("Select Pay Period", sorted(pay_periods, reverse=True))
+# --- KPI summary ---
+st.subheader("📌 KPI Summary")
+col1, col2, col3 = st.columns(3)
+col1.metric("🧍 Unique Customers", df["customer_id"].nunique())
+col2.metric("💰 Total GGR", f"€{df['ggr'].sum():,.2f}")
+col3.metric("💸 Total NGR", f"€{df['ngr'].sum():,.2f}")
 
-filtered = df[df["pay_period"] == selected_period]
+# --- Time-series chart ---
+st.subheader("📈 NGR & GGR Over Time")
+df["pay_period"] = pd.to_datetime(df["pay_period"])
+df_sorted = df.sort_values("pay_period")
+line_data = df_sorted.groupby("pay_period")[["ggr", "ngr"]].sum()
 
-st.metric("Total Customers", filtered["customer_id"].nunique())
-st.metric("Total GGR", f"{filtered['ggr'].sum():,.2f}")
-st.metric("Total NGR", f"{filtered['ngr'].sum():,.2f}")
-st.metric("Total Deposits", f"{filtered['deposits'].sum():,.2f}")
-st.metric("Total Withdrawals", f"{filtered['withdrawals'].sum():,.2f}")
-
-st.dataframe(filtered)
-
-if __name__ == "__main__":
-    port = os.getenv("PORT", "8501")  # Default to 8501 if not set
-    sys.argv = ["streamlit", "run", "app.py", "--server.port", port, "--server.enableCORS", "false"]
-    sys.exit(stcli.main())
+st.line_chart(line_data)
