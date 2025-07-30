@@ -2,10 +2,8 @@ import os
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine
-from dotenv import load_dotenv
 
 # --- Load environment variables ---
-load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # --- Create DB engine ---
