@@ -1,3 +1,10 @@
+# sensitive data
+data/
+
+# Jupyter Notebook checkpoints & notebooks
+.ipynb_checkpoints
+*.ipynb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

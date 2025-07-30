@@ -2,12 +2,16 @@ import os
 import pandas as pd
 import streamlit as st
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 
-# --- Database connection ---
-DB_URL = os.getenv("DB_URL")
-engine = create_engine(DB_URL)
+# --- Load environment variables ---
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# --- Streamlit layout ---
+# --- Create DB engine ---
+engine = create_engine(DATABASE_URL)
+
+# --- Streamlit setup ---
 st.set_page_config(page_title="Customer KPI Dashboard", layout="wide")
 st.title("📊 Customer KPI Dashboard")
 
