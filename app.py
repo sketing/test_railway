@@ -42,12 +42,6 @@ st.metric("Total Withdrawals", f"{filtered['withdrawals'].sum():,.2f}")
 st.dataframe(filtered)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8501))  # fallback if PORT not set
-    st.set_page_config(page_title="Customer KPIs")
-    st.run(port=port)
-
-
-if __name__ == "__main__":
     port = os.getenv("PORT", "8501")  # Default to 8501 if not set
     sys.argv = ["streamlit", "run", "app.py", "--server.port", port, "--server.enableCORS", "false"]
     sys.exit(stcli.main())
