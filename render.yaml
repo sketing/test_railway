@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: dench-kpi-dashboard
+    env: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "streamlit run streamlit_app/app.py --server.port 10000"
+    envVars:
+      - key: STREAMLIT_SERVER_HEADLESS
+        value: "true"
